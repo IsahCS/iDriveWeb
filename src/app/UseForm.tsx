@@ -1,22 +1,22 @@
-import React from 'react'
-import { Box, TextField, Button, InputAdornment } from '@mui/material'
-import MyLocationIcon from '@mui/icons-material/MyLocation'
-import LocationSearchingIcon from '@mui/icons-material/LocationSearching'
-import { Autocomplete } from '@react-google-maps/api'
-import PersonIcon from '@mui/icons-material/Person'
+import React, { useEffect, useRef, useState } from "react";
+import { Box, TextField, Button, InputAdornment } from "@mui/material";
+import MyLocationIcon from "@mui/icons-material/MyLocation";
+import LocationSearchingIcon from "@mui/icons-material/LocationSearching";
+import { Autocomplete } from "@react-google-maps/api";
+import PersonIcon from "@mui/icons-material/Person";
 
 interface UserFormProps {
-  userId: string
-  setUserId: (value: string) => void
-  originAddress: string
-  setOriginAddress: (value: string) => void
-  destinationAddress: string
-  setDestinationAddress: (value: string) => void
-  onLoadOrigin: (autocomplete: google.maps.places.Autocomplete) => void
-  onLoadDestination: (autocomplete: google.maps.places.Autocomplete) => void
-  onPlaceChangedOrigin: () => void
-  onPlaceChangedDestination: () => void
-  handleEstimate: () => void
+  userId: string;
+  setUserId: (value: string) => void;
+  originAddress: string;
+  setOriginAddress: (value: string) => void;
+  destinationAddress: string;
+  setDestinationAddress: (value: string) => void;
+  onLoadOrigin: (autocomplete: google.maps.places.Autocomplete) => void;
+  onLoadDestination: (autocomplete: google.maps.places.Autocomplete) => void;
+  onPlaceChangedOrigin: () => void;
+  onPlaceChangedDestination: () => void;
+  handleEstimate: () => void;
 }
 
 const UserForm: React.FC<UserFormProps> = ({
@@ -32,6 +32,23 @@ const UserForm: React.FC<UserFormProps> = ({
   onPlaceChangedDestination,
   handleEstimate,
 }) => {
+  const [errors, setErrors] = useState({
+    userId: false,
+    originAddress: false,
+    destinationAddress: false,
+  });
+
+  const validateFields = () => {
+    if(!userId.trim()) setErrors((prev) => ({ ...prev, userId: true }));
+    else if(!originAddress.trim()) setErrors((prev) => ({ ...prev, originAddress: true }));
+    else if(!destinationAddress.trim()) setErrors((prev) => ({ ...prev, destinationAddress: true }));
+  };
+
+  const handleSubmit = () => {
+    validateFields()
+    handleEstimate();
+  };
+
   return (
     <Box
       sx={{
@@ -44,8 +61,12 @@ const UserForm: React.FC<UserFormProps> = ({
       <TextField
         placeholder="Usuário"
         value={userId}
-        onChange={(e) => setUserId(e.target.value)}
+        onChange={(e) => {
+          setUserId(e.target.value);
+          if (e.target.value.trim()) setErrors((prev) => ({ ...prev, userId: false }));
+        }}
         fullWidth
+        error={errors.userId}
         InputProps={{
           startAdornment: (
             <InputAdornment position="start">
@@ -56,9 +77,6 @@ const UserForm: React.FC<UserFormProps> = ({
             borderRadius: 6,
             height: "45px",
             backgroundColor: "white",
-            ".MuiInputBase-input": {
-              color: "#4D2873",
-            },
           },
         }}
       />
@@ -67,8 +85,12 @@ const UserForm: React.FC<UserFormProps> = ({
           <TextField
             placeholder="Origem"
             value={originAddress}
-            onChange={(e) => setOriginAddress(e.target.value)}
+            onChange={(e) => {
+              setOriginAddress(e.target.value);
+              if (e.target.value.trim()) setErrors((prev) => ({ ...prev, originAddress: false }));
+            }}
             fullWidth
+            error={errors.originAddress}
             InputProps={{
               startAdornment: (
                 <InputAdornment position="start">
@@ -79,9 +101,6 @@ const UserForm: React.FC<UserFormProps> = ({
                 borderRadius: 6,
                 height: "45px",
                 backgroundColor: "white",
-                ".MuiInputBase-input": {
-                  color: "#4D2873",
-                },
               },
             }}
           />
@@ -90,8 +109,12 @@ const UserForm: React.FC<UserFormProps> = ({
           <TextField
             placeholder="Destino"
             value={destinationAddress}
-            onChange={(e) => setDestinationAddress(e.target.value)}
+            onChange={(e) => {
+              setDestinationAddress(e.target.value);
+              if (e.target.value.trim()) setErrors((prev) => ({ ...prev, destinationAddress: false }));
+            }}
             fullWidth
+            error={errors.destinationAddress}
             InputProps={{
               startAdornment: (
                 <InputAdornment position="start">
@@ -102,32 +125,24 @@ const UserForm: React.FC<UserFormProps> = ({
                 borderRadius: 6,
                 height: "45px",
                 backgroundColor: "white",
-                ".MuiInputBase-input": {
-                  color: "4D2873",
-                },
               },
             }}
           />
         </Autocomplete>
       </Box>
-      <Box
-        sx={{
-          display: 'flex',
-          justifyContent: 'center',
-        }}
-      >
+      <Box sx={{ display: "flex", justifyContent: "center" }}>
         <Button
-          onClick={handleEstimate}
+          onClick={handleSubmit}
           sx={{
             mt: 2,
-            backgroundColor: '#6153A2',
+            backgroundColor: "#6153A2",
             borderRadius: 6,
-            height: '45px',
-            color: 'white',
-            textTransform: 'none',
-            padding: '10px 20px',
+            height: "45px",
+            color: "white",
+            textTransform: "none",
+            padding: "10px 20px",
             "&:hover": {
-              backgroundColor: '#4D2873',
+              backgroundColor: "#4D2873",
             },
           }}
         >
@@ -135,7 +150,7 @@ const UserForm: React.FC<UserFormProps> = ({
         </Button>
       </Box>
     </Box>
-  )
-}
+  );
+};
 
-export default UserForm
+export default UserForm;
