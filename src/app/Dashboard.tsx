@@ -67,15 +67,30 @@ const Dashboard = () => {
         origin: originAddress,
         destination: destinationAddress,
       });
-      setEstimate(response.data);
-      const { origin, destination } = response.data;
-      const newMapUrl = `https://maps.googleapis.com/maps/api/staticmap?size=1000x800&scale=2&path=color:0x0000ff|weight:5|${origin.latitude},${origin.longitude}|${destination.latitude},${destination.longitude}&markers=color:green|label:A|${origin.latitude},${origin.longitude}&markers=color:red|label:B|${destination.latitude},${destination.longitude}&key=${googleMapsApiKey}`;
-      setMapUrl(newMapUrl);
-    } catch (error) {
-      if (axios.isAxiosError(error) && error.response) {
-        toast.error(<span>{error.response.data.error_message}<br />{error.response.data.error}</span>);
+
+      if (response.status === 200) {
+        setEstimate(response.data);
+        const { origin, destination } = response.data;
+        const newMapUrl = `https://maps.googleapis.com/maps/api/staticmap?size=1000x800&scale=2&path=color:0x0000ff|weight:5|${origin.latitude},${origin.longitude}|${destination.latitude},${destination.longitude}&markers=color:green|label:A|${origin.latitude},${origin.longitude}&markers=color:red|label:B|${destination.latitude},${destination.longitude}&key=${googleMapsApiKey}`;
+        setMapUrl(newMapUrl);
       } else {
-        toast.error("Erro ao fazer a requisição." + error);
+        toast.error("Erro inesperado ao fazer a requisição.")
+      }
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        if (error.response) {
+          console.error("Erro na resposta da requisição:", error.response);
+          if (error.response.status === 404) {
+            toast.error(error.response.data.message);
+          } else {
+            toast.error(<span>{error.response.data.error_message}<br />{error.response.data.error}</span>);
+          }
+        } else {
+          toast.error("Erro ao fazer a requisição: " + error.message);
+        }
+      } else {
+        console.error("Erro inesperado:", error);
+        toast.error("Erro inesperado ao fazer a requisição.");
       }
     }
   };
@@ -114,8 +129,20 @@ const Dashboard = () => {
   }
 
   return (
-    <Box sx={{ width: "100%", backgroundColor: "#fbf6ff", display: "flex", justifyContent: "space-between" }}>
-      <Box sx={{ width: "50%", padding: "20px" }}>
+    <Box
+      sx={{
+        width: "100%",
+        backgroundColor: "#fbf6ff",
+        display: "flex",
+        justifyContent: "space-between",
+        flexDirection: { xs: "column", md: "row" },
+      }}
+    >
+      <Box sx={{ 
+          width: { xs: "100%", md: "50%" }, 
+          padding: "20px" ,
+        }}
+      >
         <UserForm
           userId={userId}
           setUserId={setUserId}
@@ -139,7 +166,7 @@ const Dashboard = () => {
       </Box>
       <Box
         sx={{
-          width: "50%",
+          width: { xs: "100%", md: "50%" },
           height: "100vh",
           position: "relative",
           padding: "20px",
