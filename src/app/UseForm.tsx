@@ -42,7 +42,7 @@ const UserForm: React.FC<UserFormProps> = ({
       }}
     >
       <TextField
-        placeholder="Id do usuário"
+        placeholder="Usuário"
         value={userId}
         onChange={(e) => setUserId(e.target.value)}
         fullWidth
