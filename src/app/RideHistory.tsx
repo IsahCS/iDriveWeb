@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { Box, TextField, Button, MenuItem, Select, Typography, List, ListItem, ListItemText, Divider } from "@mui/material";
-import axios from "axios";
-import { useLocation } from "react-router-dom";
 import WatchLaterIcon from '@mui/icons-material/WatchLater';
 import { toast } from "react-toastify";
+import axios from "axios";
+import { useLocation } from "react-router-dom";
 
 interface Ride {
   id: string;
@@ -34,6 +34,8 @@ const RideHistory = () => {
   const [driverId, setDriverId] = useState(initialDriverId);
   const [rides, setRides] = useState<Ride[]>([]);
   const [drivers, setDrivers] = useState<Driver[]>([]);
+  const [errors, setErrors] = useState({ customerId: false });
+
 
 
   const fetchRideHistory = async (customerId: string, driverId: string) => {
@@ -51,14 +53,15 @@ const RideHistory = () => {
           toast.error(<span>{error.response.data.error_message}<br />{error.response.data.error}</span>);
           setRides([]);
         }
-      } 
-      else {
+      } else {
         console.error("Erro ao buscar histórico de viagens:", error);
       }
     }
   };
 
   const handleFilter = () => {
+    const hasErrors = !customerId.trim();
+    setErrors({ customerId: hasErrors });
     fetchRideHistory(customerId, driverId);
   };
 
@@ -94,12 +97,18 @@ const RideHistory = () => {
       <TextField
         label="Usuário"
         value={customerId}
-        onChange={(e) => setCustomerId(e.target.value)}
+        onChange={(e) => {
+          setCustomerId(e.target.value);
+          if (e.target.value.trim()) {
+            setErrors((prevErrors) => ({ ...prevErrors, customerId: false }));
+          }
+        }}
         fullWidth
         sx={{ mb: 2 }}
+        error={errors.customerId}
         InputProps={{
           sx: {
-            borderRadius: 6
+            borderRadius: 6,
           },
         }}
       />
@@ -117,7 +126,11 @@ const RideHistory = () => {
           </MenuItem>
         ))}
       </Select>
-      <Button variant="contained" color="primary" onClick={handleFilter} fullWidth
+      <Button
+        variant="contained"
+        color="primary"
+        onClick={handleFilter}
+        fullWidth
         sx={{
           mb: 2,
           backgroundColor: "#6153A2",
@@ -154,15 +167,14 @@ const RideHistory = () => {
             <ListItem>
               <ListItemText
                 primary={
-                  <Box sx={{ display: "flex", justifyContent: "space-between"}}>
+                  <Box sx={{ display: "flex", justifyContent: "space-between" }}>
                     <Typography variant="h6" sx={{ color: "#4D2873", fontSize: "18px" }}>
                       {ride.driver.name}
                     </Typography>
                     <Typography component="span" sx={{ display: "flex", alignItems: "center", color: "grey", fontSize: "15px" }}>
-                      <WatchLaterIcon sx={{ fontSize: "13px", marginRight: 1  }} />
+                      <WatchLaterIcon sx={{ fontSize: "13px", marginRight: 1 }} />
                       {new Date(ride.date).toLocaleString()}
                     </Typography>
-
                   </Box>
                 }
                 secondary={
