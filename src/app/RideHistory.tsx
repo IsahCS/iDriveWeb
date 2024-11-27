@@ -92,7 +92,7 @@ const RideHistory = () => {
         Histórico de Viagens
       </Typography>
       <TextField
-        label="Id do Usuário"
+        label="Usuário"
         value={customerId}
         onChange={(e) => setCustomerId(e.target.value)}
         fullWidth
