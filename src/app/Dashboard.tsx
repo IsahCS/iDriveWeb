@@ -11,7 +11,7 @@ import Loading from "./Loading";
 import { useNavigate } from "react-router-dom";
 
 const placesLibrary: Libraries = ["places"];
-const googleMapsApiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY || "";
+const googleMapsApiKey = import.meta.env.VITE_API_KEY || "";
 
 const Dashboard = () => {
   const navigate = useNavigate();
