@@ -62,7 +62,7 @@ const Dashboard = () => {
 
   const handleEstimate = async () => {
     try {
-      const response = await axios.post("http://localhost:8080/ride/estimate", {
+      const response = await axios.post(`${import.meta.env.VITE_PORT}/ride/estimate`, {
         customer_id: userId,
         origin: originAddress,
         destination: destinationAddress,
@@ -112,7 +112,7 @@ const Dashboard = () => {
     };
 
     try {
-      await axios.patch("http://localhost:8080/ride/confirm", confirmRideRequest);
+      await axios.patch(`${import.meta.env.VITE_PORT}/ride/confirm`, confirmRideRequest);
       toast.success("Viagem confirmada com sucesso!");
       navigate("/ride-history");
     } catch (error) {
