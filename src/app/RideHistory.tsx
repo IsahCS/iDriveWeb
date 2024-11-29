@@ -40,7 +40,7 @@ const RideHistory = () => {
 
   const fetchRideHistory = async (customerId: string, driverId: string) => {
     try {
-      const url = `${import.meta.env.VITE_PORT_BACKEND}/ride/${customerId}`;
+      const url = `${import.meta.env.VITE_URL_BACKEND}/ride/${customerId}`;
       const params = driverId !== "all" ? { driver_id: driverId } : {};
       const response = await axios.get<{ customer_id: string; rides: Ride[] }>(url, { params });
       setRides(response.data.rides);
