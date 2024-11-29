@@ -82,7 +82,10 @@ const Dashboard = () => {
           console.error("Erro na resposta da requisição:", error.response);
           if (error.response.status === 404) {
             toast.error(error.response.data.message);
-          } else {
+          } else if (error.response.status === 500){
+            toast.error(error.response.data.message);
+          } 
+          else {
             toast.error(<span>{error.response.data.error_message}<br />{error.response.data.error}</span>);
           }
         } else {
