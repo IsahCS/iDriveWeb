@@ -1,5 +1,5 @@
 import React from "react";
-import { List, ListItem, ListItemText, Button, Typography, Divider, Box, Rating } from "@mui/material";
+import { List, ListItem, Button, Typography, Divider, Box, Rating } from "@mui/material";
 import { DriverOption, EstimateResponse } from "./interface";
 import PermIdentityIcon from "@mui/icons-material/PermIdentity";
 
@@ -71,37 +71,32 @@ const DriverOptions: React.FC<DriverOptionsProps> = ({ estimate, handleConfirmRi
                   <PermIdentityIcon sx={{ marginRight: 1, color: "#4D2873" }} />
                   <Typography color="#4D2873" >{option.name}</Typography>
                 </Box>
-                <ListItemText
-                  primary={null}
-                  secondary={
-                    <>
-                      <Typography color="text.primary">
-                        {option.description}
-                      </Typography>
-                      <Typography>
-                        Veículo: {option.vehicle}
-                      </Typography>
-                      <Box
-                        sx={{
-                          display: "flex",
-                          alignItems: "center",
-                          gap: 1,
-                        }}
-                      >
-                        <Typography>
-                          {option.review.rating}
-                        </Typography>
-                        <Rating value={option.review.rating} readOnly size="small" />
-                      </Box>
-                      <Typography>
-                        Comentário: {option.review.comment}
-                      </Typography>
-                      <Typography color="black">
-                        R$: {option.value}
-                      </Typography>
-                    </>
-                  }
-                />
+                <Box>
+                  <Typography color="text.primary">
+                    {option.description}
+                  </Typography>
+                  <Typography>
+                    Veículo: {option.vehicle}
+                  </Typography>
+                  <Box
+                    sx={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 1,
+                    }}
+                  >
+                    <Typography>
+                      {option.review.rating}
+                    </Typography>
+                    <Rating value={option.review.rating} readOnly size="small" />
+                  </Box>
+                  <Typography>
+                    Comentário: {option.review.comment}
+                  </Typography>
+                  <Typography color="black">
+                    R$: {option.value}
+                  </Typography>
+                </Box>
               </ListItem>
               <Button
                 onClick={() => handleConfirmRide(option)}
