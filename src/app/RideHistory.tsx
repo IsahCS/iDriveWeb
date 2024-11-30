@@ -1,28 +1,10 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Box, TextField, Button, MenuItem, Select, Typography, List, ListItem, ListItemText, Divider } from "@mui/material";
 import WatchLaterIcon from '@mui/icons-material/WatchLater';
 import { toast } from "react-toastify";
 import axios from "axios";
 import { useLocation } from "react-router-dom";
-
-interface Ride {
-  id: string;
-  date: string;
-  origin: string;
-  destination: string;
-  distance: number;
-  duration: string;
-  driver: {
-    id: number;
-    name: string;
-  };
-  value: number;
-}
-
-interface Driver {
-  id: string;
-  name: string;
-}
+import { CustomAxiosError, Driver, Errors, Ride } from "./interface";
 
 const RideHistory = () => {
   const location = useLocation();
@@ -36,22 +18,36 @@ const RideHistory = () => {
   const [drivers, setDrivers] = useState<Driver[]>([]);
   const [errors, setErrors] = useState({ customerId: false });
 
+  useEffect(() => {
+    const fetchDrivers = async () => {
+      try {
+        const response = await axios.get<Driver[]>(`${import.meta.env.VITE_URL_BACKEND}/drivers`);
+        setDrivers(response.data);
+      } catch (error) {
+        console.error("Erro ao buscar motoristas:", error);
+      }
+    };
 
+    fetchDrivers();
+  }, []);
 
-  const fetchRideHistory = async (customerId: string, driverId: number) => {
+  const fetchRideHistory = async (customerId: string, driverId: string) => {
     try {
       const url = `${import.meta.env.VITE_URL_BACKEND}/ride/${customerId}`;
       const params = driverId !== "all" ? { driver_id: driverId } : {};
       const response = await axios.get<{ customer_id: string; rides: Ride[] }>(url, { params });
       setRides(response.data.rides);
     } catch (error) {
-      if (axios.isAxiosError(error) && error.response) {
-        if (error.response.status === 404) {
-          toast.error(error.response.data.error_description);
-          setRides([]);
-        } else if (error.response.status === 400) {
-          toast.error(<span>{error.response.data.error_message}<br />{error.response.data.error}</span>);
-          setRides([]);
+      if (axios.isAxiosError(error)) {
+        const axiosError = error as CustomAxiosError;
+        if (axiosError.response) {
+          if (axiosError.response.status === 404) {
+            toast.error(axiosError.response.data.error_description);
+            setRides([]);
+          } else if (axiosError.response.status === 400) {
+            toast.error(React.createElement("span", null, axiosError.response.data.error_message, React.createElement("br"), axiosError.response.data.error));
+            setRides([]);
+          }
         }
       } else {
         console.error("Erro ao buscar histórico de viagens:", error);
@@ -100,7 +96,7 @@ const RideHistory = () => {
         onChange={(e) => {
           setCustomerId(e.target.value);
           if (e.target.value.trim()) {
-            setErrors((prevErrors) => ({ ...prevErrors, customerId: false }));
+            setErrors((prevErrors: Errors) => ({ ...prevErrors, customerId: false }));
           }
         }}
         fullWidth
@@ -114,13 +110,13 @@ const RideHistory = () => {
       />
       <Select
         value={driverId}
-        onChange={(e) => setDriverId(e.target.value as number)}
+        onChange={(e) => setDriverId(e.target.value as string)}
         fullWidth
         displayEmpty
         sx={{ mb: 2, borderRadius: 6 }}
       >
         <MenuItem value="all">Todos os Motoristas</MenuItem>
-        {drivers.map((driver) => (
+        {drivers.map((driver: Driver) => (
           <MenuItem key={driver.id} value={driver.id}>
             {driver.name}
           </MenuItem>
@@ -162,7 +158,7 @@ const RideHistory = () => {
           },
         }}
       >
-        {rides.map((ride) => (
+        {rides.map((ride: Ride) => (
           <React.Fragment key={ride.id}>
             <ListItem>
               <ListItemText
@@ -178,18 +174,13 @@ const RideHistory = () => {
                   </Box>
                 }
                 secondary={
-                  <>
-                    <br />
-                    Origem: {ride.origin}
-                    <br />
-                    Destino: {ride.destination}
-                    <br />
-                    Distância: {formatDistance(ride.distance)}
-                    <br />
-                    Tempo: {formatDuration(ride.duration)}
-                    <br />
-                    Valor: R$ {ride.value.toFixed(2)}
-                  </>
+                  <Box>
+                    <Typography>Origem: {ride.origin}</Typography>
+                    <Typography>Destino: {ride.destination}</Typography>
+                    <Typography>Distância: {formatDistance(ride.distance)}</Typography>
+                    <Typography>Tempo: {formatDuration(ride.duration)}</Typography>
+                    <Typography>Valor: R$ {ride.value.toFixed(2)}</Typography>
+                  </Box>
                 }
               />
             </ListItem>
