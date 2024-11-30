@@ -13,7 +13,7 @@ interface Ride {
   distance: number;
   duration: string;
   driver: {
-    id: string;
+    id: number;
     name: string;
   };
   value: number;
@@ -38,7 +38,7 @@ const RideHistory = () => {
 
 
 
-  const fetchRideHistory = async (customerId: string, driverId: string) => {
+  const fetchRideHistory = async (customerId: string, driverId: number) => {
     try {
       const url = `${import.meta.env.VITE_URL_BACKEND}/ride/${customerId}`;
       const params = driverId !== "all" ? { driver_id: driverId } : {};
@@ -114,7 +114,7 @@ const RideHistory = () => {
       />
       <Select
         value={driverId}
-        onChange={(e) => setDriverId(e.target.value as string)}
+        onChange={(e) => setDriverId(e.target.value as number)}
         fullWidth
         displayEmpty
         sx={{ mb: 2, borderRadius: 6 }}
