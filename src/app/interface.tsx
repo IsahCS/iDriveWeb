@@ -14,7 +14,7 @@ export interface PlaceResult {
   }
   
 export interface DriverOption {
-    id: string;
+    id: number;
     name: string;
     description: string;
     vehicle: string;
@@ -32,7 +32,7 @@ export interface ConfirmRideRequest {
     distance: number; 
     duration: string;
     driver: {
-      id: string;
+      id: number;
       name: string;
     }
     value: string;
